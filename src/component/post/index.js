@@ -8,17 +8,21 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {Link} from 'react-router-dom';
 import Container from '@mui/material/Container';
 import DateUtils from '../../util/DateUtils';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import StyleStockService from '../../service/StyleStockService';
 
 const columns = [
     {field: 'id', headerName: 'ID', flex: 0.4},
-    {field: 'title', headerName: 'Title', flex: 1},
-    {field: 'email', headerName: 'Brand', flex: 0.7},
-    {field: 'creationDate', valueGetter: (params) => DateUtils.formatDateNumber(params.row.startTime), headerName: 'Creation Date', flex: 1.4},
+    {field: 'title', headerName: 'Title', flex: 2},
+    {field: 'author', headerName: 'Brand', flex: 1, renderCell: (params) => (
+        <Link to={`/Marques/${params.value}`}>{params.value}</Link>
+      )},
+    {field: 'created_at', valueGetter: (params) => DateUtils.formatDateNumber(params.row.created_at), headerName: 'Creation Date', flex: 1.4},
     {field: 'details', headerName: 'Details', sortable: false, flex: 0.5, renderCell: (cellValue) => {
         return <IconButton aria-label="details"
                            color="primary"
                            component={Link}
-                           to={``}>
+                           to={`/Publications/${cellValue.id}`}>
             <ArrowForwardIcon />
         </IconButton>;
     }},
@@ -26,29 +30,61 @@ const columns = [
 
 const DEFAULT_STATE = {
     loading: false,
-    pageSize: 20,
-    totalPages: 0,
-    page: 0,
-    rowCount: 0,
-    rowsPerPage: [20, 50, 100],
+    page: 1,
+    limit: 100,
+    posts: [],
+    availablePosts: [],
+    id: null,
+    title: '',
 };
 
 class PostTable extends React.Component {
     state = DEFAULT_STATE;
 
-    updateModelOnSortChange = (model) => {
-        this.setState({sortProperty: model[0]?.field, sortOrder: model[0]?.sort}, this.updateData);
+        componentDidMount() {
+        StyleStockService.getAvailablePosts().then((res) => {
+            this.setState({
+                availablePosts: res.data,
+            });
+        }).catch(() => {
+            
+        });
+
+        this.setState({
+            id: this.props.id,
+            title: this.props.title
+        }, this.updateData);
     }
 
-    updateModelOnPageChange = (model) => {
-        this.setState({page: model}, this.updateData);
+    updateId = (model) => {
+        this.setState({id: model.target.value});
     }
 
-    updateModelOnPageSizeChange = (model) => {
-        this.setState({pageSize: model}, this.updateData);
+    updateTitle = (model) => {
+        this.setState({title: model.target.value});
     }
 
     updateData = () => {
+        this.setState({loading: true}, () => {
+            StyleStockService.getPageOfPost(this.state).then(res => {
+                this.setState({
+                    posts: res.data['hydra:member'],
+                    totalPages: res.data.totalPages,
+                    page: res.data.number,
+                    rowCount: res.data.totalElements,
+                });
+            }).catch(() => {
+                
+            }).finally(() => {
+                this.setState({
+                    loading: false,
+                });
+            });
+        });
+    }
+
+    resetFiltersAndUpdateData = () => {
+        this.setState({...DEFAULT_STATE, availableBrands: this.state.availableBrands}, this.updateData);
     }
 
     render() {
@@ -59,14 +95,18 @@ class PostTable extends React.Component {
                     <TextField 
                       id="outlined-search"
                       label="Id"
-                      type="search"/>
+                      type="search"
+                      value={this.state.id}
+                      onChange={this.updateId}/>
                 </FormControl>
 
                 <FormControl sx={{my: 1, mx: 0.5, width: 300}}>
                 <TextField 
                       id="outlined-search"
-                      label="Marques"
-                      type="search"/>
+                      label="Titre"
+                      type="search"
+                      value={this.state.title}
+                      onChange={this.updateTitle}/>
                 </FormControl>
 
                 <FormControl sx={{my: 1, mx: 0.5}}>
@@ -78,22 +118,20 @@ class PostTable extends React.Component {
                 </FormControl>
 
                 <DataGrid
-                    autoHeight={true}
-                    disableColumnFilter={true}
-                    rows={this.state}
+                    rows={this.state.posts}
                     columns={columns}
-                    paginationMode={'server'}
-                    sortingMode={'server'}
-                    filterMode={'server'}
-                    rowCount={this.state.rowCount}
-                    pageSize={this.state.pageSize}
-                    page={this.state.page}
-                    rowsPerPageOptions={this.state.rowsPerPage}
-                    onSortModelChange={this.updateModelOnSortChange}
-                    onPageChange={this.updateModelOnPageChange}
-                    onPageSizeChange={this.updateModelOnPageSizeChange}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 20,
+                        },
+                      },
+                    }}
+                    pageSizeOptions={[20]}
+                    disableRowSelectionOnClick
                     loading={this.state.loading}
                 />
+
             </Container>
         );
     }

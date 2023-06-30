@@ -1,33 +1,44 @@
-import * as React from 'react';
+import React from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 const Login = () => {
-    return (
-        <Stack
+  const submitLoginForm = (event) => {
+    event.preventDefault();
+  };
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Stack
         component="form"
         sx={{
-          width: '25ch',
+          width: '300px',
+          textAlign: 'center',
         }}
         spacing={2}
         noValidate
         autoComplete="off"
       >
+        <h2>Login to BackOffice of StyleStock 🧨</h2>
         <TextField
           id="outlined-email-input"
           label="Email"
           type="email"
-        />,
-
+          required
+        />
         <TextField
-        id="outlined-password-input"
-        label="Password"
-        type="password"
-      />,
-      <Button variant="contained">Login</Button>
+          id="outlined-password-input"
+          label="Password"
+          type="password"
+          required
+        />
+        <Button variant="contained" type="submit" onClick={submitLoginForm}>
+          Login
+        </Button>
       </Stack>
-    );
-  };
-  
-  export default Login;
+    </div>
+  );
+};
+
+export default Login;

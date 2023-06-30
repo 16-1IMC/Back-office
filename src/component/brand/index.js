@@ -1,12 +1,6 @@
 import React from 'react';
 import {DataGrid} from '@mui/x-data-grid';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
@@ -14,18 +8,19 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {Link} from 'react-router-dom';
 import Container from '@mui/material/Container';
 import DateUtils from '../../util/DateUtils';
+import StyleStockService from '../../service/StyleStockService';
 
 const columns = [
     {field: 'id', headerName: 'ID', flex: 0.4},
     {field: 'name', headerName: 'Name', flex: 1},
-    {field: 'email', headerName: 'Email', flex: 0.7},
-    {field: 'category', headerName: 'Category', flex: 0.7},
-    {field: 'creationDate', valueGetter: (params) => DateUtils.formatDateNumber(params.row.startTime), headerName: 'Creation Date', flex: 1.4},
+    {field: 'email', headerName: 'Email', flex: 1},
+    {field: 'status', headerName: 'Statut', flex: 1},
+    {field: 'created_at', valueGetter: (params) => DateUtils.formatDateNumber(params.row.created_at), headerName: 'Creation Date', flex: 1.4},
     {field: 'details', headerName: 'Details', sortable: false, flex: 0.5, renderCell: (cellValue) => {
         return <IconButton aria-label="details"
                            color="primary"
                            component={Link}
-                           to={``}>
+                           to={`/Marques/${cellValue.id}`}>
             <ArrowForwardIcon />
         </IconButton>;
     }},
@@ -33,33 +28,61 @@ const columns = [
 
 const DEFAULT_STATE = {
     loading: false,
-    pageSize: 20,
-    totalPages: 0,
-    page: 0,
-    rowCount: 0,
-    rowsPerPage: [20, 50, 100],
+    limit: 100,
+    page: 1,
+    brands: [],
+    availableBrands: [],
+    id: null,
+    name: '',
 };
 
 class BrandTable extends React.Component {
     state = DEFAULT_STATE;
 
-    updateModelOnSortChange = (model) => {
-        this.setState({sortProperty: model[0]?.field, sortOrder: model[0]?.sort}, this.updateData);
+    componentDidMount() {
+        StyleStockService.getAvailableBrands().then((res) => {
+            this.setState({
+                availableBrands: res.data,
+            });
+        }).catch(() => {
+            
+        });
+
+        this.setState({
+            id: this.props.id,
+            name: this.props.name
+        }, this.updateData);
+    }
+    
+    updateId = (model) => {
+        this.setState({id: model.target.value});
     }
 
-    updateModelOnPageChange = (model) => {
-        this.setState({page: model}, this.updateData);
-    }
-
-    updateModelOnPageSizeChange = (model) => {
-        this.setState({pageSize: model}, this.updateData);
+    updateName = (model) => {
+        this.setState({name: model.target.value});
     }
 
     updateData = () => {
+        this.setState({loading: true}, () => {
+            StyleStockService.getPageOfBrand(this.state).then(res => {
+                this.setState({
+                    brands: res.data['hydra:member'],
+                    totalPages: res.data.totalPages,
+                    page: res.data.number,
+                    rowCount: res.data.totalElements,
+                });
+            }).catch(() => {
+                
+            }).finally(() => {
+                this.setState({
+                    loading: false,
+                });
+            });
+        });
     }
 
     resetFiltersAndUpdateData = () => {
-
+        this.setState({...DEFAULT_STATE, availableBrands: this.state.availableBrands}, this.updateData);
     }
 
     render() {
@@ -70,37 +93,20 @@ class BrandTable extends React.Component {
                     <TextField 
                       id="outlined-search"
                       label="Id"
-                      type="search"/>
+                      type="search"
+                      value={this.state.id}
+                      onChange={this.updateId}
+                      />
                 </FormControl>
 
                 <FormControl sx={{my: 1, mx: 0.5, width: 300}}>
                 <TextField 
                       id="outlined-search"
                       label="Name"
-                      type="search"/>
-                </FormControl>
-
-                <FormControl sx={{my: 1, mx: 0.5, width: 300}}>
-                    <InputLabel id="demo-multiple-name-label">Catégorie</InputLabel>
-                    <Select
-                        labelId="demo-multiple-name-label"
-                        id="demo-multiple-name"
-                        multiple
-                        value={this.state}
-                        input={<OutlinedInput label="Name" />}
-                        //renderValue={(selected) => selected.join(', ')}
-                        onChange={this.state}
-                    >
-                        {/* {this.state.map((category) => {
-                            return <MenuItem
-                                key={category}
-                                value={category}
-                            >
-                                <Checkbox checked={this.state.indexOf(category) > -1} />
-                                <ListItemText primary={category}/>
-                            </MenuItem>
-                        })} */}
-                    </Select>
+                      type="search"
+                      value={this.state.name}
+                      onChange={this.updateName}
+                      />
                 </FormControl>
 
                 <FormControl sx={{my: 1, mx: 0.5}}>
@@ -112,20 +118,17 @@ class BrandTable extends React.Component {
                 </FormControl>
 
                 <DataGrid
-                    autoHeight={true}
-                    disableColumnFilter={true}
-                    rows={this.state}
+                    rows={this.state.brands}
                     columns={columns}
-                    paginationMode={'server'}
-                    sortingMode={'server'}
-                    filterMode={'server'}
-                    rowCount={this.state.rowCount}
-                    pageSize={this.state.pageSize}
-                    page={this.state.page}
-                    rowsPerPageOptions={this.state.rowsPerPage}
-                    onSortModelChange={this.updateModelOnSortChange}
-                    onPageChange={this.updateModelOnPageChange}
-                    onPageSizeChange={this.updateModelOnPageSizeChange}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 20,
+                        },
+                      },
+                    }}
+                    pageSizeOptions={[20]}
+                    disableRowSelectionOnClick
                     loading={this.state.loading}
                 />
             </Container>
