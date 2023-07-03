@@ -14,13 +14,13 @@ const columns = [
     {field: 'id', headerName: 'ID', flex: 0.4},
     {field: 'name', headerName: 'Name', flex: 1},
     {field: 'email', headerName: 'Email', flex: 1},
-    {field: 'status', headerName: 'Statut', flex: 1},
+    {field: 'status', headerName: 'Status', flex: 1},
     {field: 'created_at', valueGetter: (params) => DateUtils.formatDateNumber(params.row.created_at), headerName: 'Creation Date', flex: 1.4},
     {field: 'details', headerName: 'Details', sortable: false, flex: 0.5, renderCell: (cellValue) => {
         return <IconButton aria-label="details"
                            color="primary"
                            component={Link}
-                           to={`/Marques/${cellValue.id}`}>
+                           to={`/Brands/${cellValue.id}`}>
             <ArrowForwardIcon />
         </IconButton>;
     }},
@@ -32,7 +32,7 @@ const DEFAULT_STATE = {
     page: 1,
     brands: [],
     availableBrands: [],
-    id: null,
+    id: '',
     name: '',
 };
 
@@ -67,9 +67,6 @@ class BrandTable extends React.Component {
             StyleStockService.getPageOfBrand(this.state).then(res => {
                 this.setState({
                     brands: res.data['hydra:member'],
-                    totalPages: res.data.totalPages,
-                    page: res.data.number,
-                    rowCount: res.data.totalElements,
                 });
             }).catch(() => {
                 
@@ -88,7 +85,7 @@ class BrandTable extends React.Component {
     render() {
         return (
             <Container maxWidth="xl" sx={{mt: 1}}>
-                <h1>Marques</h1>
+                <h1>Brands</h1>
                 <FormControl sx={{my: 1, mx: 0.5, width: 100}}>
                     <TextField 
                       id="outlined-search"
@@ -123,11 +120,11 @@ class BrandTable extends React.Component {
                     initialState={{
                       pagination: {
                         paginationModel: {
-                          pageSize: 20,
+                          pageSize: 10,
                         },
                       },
                     }}
-                    pageSizeOptions={[20]}
+                    pageSizeOptions={[10]}
                     disableRowSelectionOnClick
                     loading={this.state.loading}
                 />

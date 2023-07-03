@@ -1,9 +1,9 @@
-import Accueille from "./component/home"
-import Marques from "./component/brand/index"
-import Publications from "./component/post/index"
-import Utilisateurs from "./component/account-management/index"
-import NouvellesMarques from "./component/new-brand/index"
-import Login from "./component/login"
+import Home from "./component/home"
+import Brands from "./component/brand/index"
+import Posts from "./component/post/index"
+import Users from "./component/account-management/index"
+import NewBrands from "./component/new-brand/index"
+import GetToken from "./component/token"
 import './App.css';
 import ResponsiveAppBar from './component/layout';
 import { Route, Routes } from 'react-router';
@@ -13,12 +13,13 @@ function App() {
     <div className="App">
       <ResponsiveAppBar />
       <Routes>
-        <Route path="/" element={<Accueille />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="Marques" element={<Marques />} />
-        <Route path="Publications" element={<Publications />} />
-        <Route path="Utilisateurs" element={<Utilisateurs />} />
-        <Route path="NouvellesMarques" element={<NouvellesMarques />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/getToken" element={<GetToken />} />
+        <Route path="Home" element={<Home />} />
+        <Route path="Brands" element={<Brands />} />
+        <Route path="Posts" element={<Posts />} />
+        <Route path="Users" element={<Users />} />
+        <Route path="NewBrands" element={<NewBrands />} />
       </Routes>
     </div>
   );

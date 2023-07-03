@@ -14,13 +14,13 @@ const columns = [
     {field: 'id', headerName: 'ID', flex: 0.4},
     {field: 'name', headerName: 'Name', flex: 1},
     {field: 'email', headerName: 'Email', flex: 1},
-    {field: 'status', headerName: 'Statut', flex: 1},
+    {field: 'status', headerName: 'Status', flex: 1},
     {field: 'created_at', valueGetter: (params) => DateUtils.formatDateNumber(params.row.created_at), headerName: 'Creation Date', flex: 1.4},
     {field: 'details', headerName: 'Details', sortable: false, flex: 0.5, renderCell: (cellValue) => {
         return <IconButton aria-label="details"
                            color="primary"
                            component={Link}
-                           to={`/Marques/${cellValue.id}`}>
+                           to={`/NewBrands/${cellValue.id}`}>
             <ArrowForwardIcon />
         </IconButton>;
     }},
@@ -30,9 +30,9 @@ const DEFAULT_STATE = {
     loading: false,
     page: 1,
     limit: 100,
-    brands: [],
-    availableBrands: [],
-    id: null,
+    newbrands: [],
+    availableNewBrands: [],
+    id: '',
     name: '',
 };
 
@@ -40,9 +40,9 @@ class NewBrandTable extends React.Component {
     state = DEFAULT_STATE;
 
     componentDidMount() {
-        StyleStockService.getAvailableBrands().then((res) => {
+        StyleStockService.getAvailableNewBrands().then((res) => {
             this.setState({
-                availableBrands: res.data,
+                availableNewBrands: res.data,
             });
         }).catch(() => {
             
@@ -64,12 +64,9 @@ class NewBrandTable extends React.Component {
 
     updateData = () => {
         this.setState({loading: true}, () => {
-            StyleStockService.getPageOfBrand(this.state).then(res => {
+            StyleStockService.getPageOfNewBrand(this.state).then(res => {
                 this.setState({
-                    brands: res.data['hydra:member'],
-                    totalPages: res.data.totalPages,
-                    page: res.data.number,
-                    rowCount: res.data.totalElements,
+                    newbrands: res.data['hydra:member'],
                 });
             }).catch(() => {
                 
@@ -82,13 +79,13 @@ class NewBrandTable extends React.Component {
     }
 
     resetFiltersAndUpdateData = () => {
-        this.setState({...DEFAULT_STATE, availableBrands: this.state.availableBrands}, this.updateData);
+        this.setState({...DEFAULT_STATE, availableNewBrands: this.state.availableNewBrands}, this.updateData);
     }
 
     render() {
         return (
             <Container maxWidth="xl" sx={{mt: 1}}>
-              <h1>Nouvelles-Marques</h1>
+              <h1>New Brands</h1>
                 <FormControl sx={{my: 1, mx: 0.5, width: 100}}>
                     <TextField 
                       id="outlined-search"
@@ -116,16 +113,16 @@ class NewBrandTable extends React.Component {
                 </FormControl>
 
                 <DataGrid
-                    rows={this.state.brands}
+                    rows={this.state.newbrands}
                     columns={columns}
                     initialState={{
                       pagination: {
                         paginationModel: {
-                          pageSize: 20,
+                          pageSize: 10,
                         },
                       },
                     }}
-                    pageSizeOptions={[20]}
+                    pageSizeOptions={[10]}
                     disableRowSelectionOnClick
                     loading={this.state.loading}
                 />

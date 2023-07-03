@@ -10,17 +10,16 @@ import Container from '@mui/material/Container';
 import DateUtils from '../../util/DateUtils';
 import StyleStockService from '../../service/StyleStockService';
 
-
 const columns = [
     {field: 'id', headerName: 'ID', flex: 0.4},
     {field: 'email', headerName: 'Email', flex: 1},
-    {field: 'isAdmin', headerName: 'Admin', flex: 1},
+    {field: 'roles', headerName: 'Role', flex: 1, renderCell: (params) => params.value,},
     {field: 'created_at', valueGetter: (params) => DateUtils.formatDateNumber(params.row.created_at), headerName: 'Creation Date', flex: 1.4},
     {field: 'details', headerName: 'Details', sortable: false, flex: 0.5, renderCell: (cellValue) => {
         return <IconButton aria-label="details"
                            color="primary"
                            component={Link}
-                           to={`/Utilisateurs/${cellValue.id}`}>
+                           to={`/Users/${cellValue.id}`}>
             <ArrowForwardIcon />
         </IconButton>;
     }},
@@ -32,7 +31,7 @@ const DEFAULT_STATE = {
     limit: 100,
     users: [],
     availableUsers: [],
-    id: null,
+    id: '',
     email: '',
 };
 
@@ -67,9 +66,6 @@ class UserTable extends React.Component {
             StyleStockService.getPageOfUser(this.state).then(res => {
                 this.setState({
                     users: res.data['hydra:member'],
-                    totalPages: res.data.totalPages,
-                    page: res.data.number,
-                    rowCount: res.data.totalElements,
                 });
             }).catch(() => {
                 
@@ -82,13 +78,13 @@ class UserTable extends React.Component {
     }
 
     resetFiltersAndUpdateData = () => {
-        this.setState({...DEFAULT_STATE, availableBrands: this.state.availableBrands}, this.updateData);
+        this.setState({...DEFAULT_STATE, availableUsers: this.state.availableUsers}, this.updateData);
     }
 
     render() {
         return (
             <Container maxWidth="xl" sx={{mt: 1}}>
-              <h1>Utilisateurs</h1>
+              <h1>Users</h1>
                 <FormControl sx={{my: 1, mx: 0.5, width: 100}}>
                     <TextField 
                       id="outlined-search"
@@ -122,11 +118,11 @@ class UserTable extends React.Component {
                     initialState={{
                       pagination: {
                         paginationModel: {
-                          pageSize: 20,
+                          pageSize: 10,
                         },
                       },
                     }}
-                    pageSizeOptions={[20]}
+                    pageSizeOptions={[10]}
                     disableRowSelectionOnClick
                     loading={this.state.loading}
                 />

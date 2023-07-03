@@ -1,63 +1,107 @@
 import axios from "axios";
-import qs from "qs";
 
 const StyleStockService = {
+
+    //Brands
     getAvailableBrands: function() {
-        return axios.get('http://thegoodnetwork.fr/index.php/api/brands')
+        return axios.get('http://thegoodnetwork.fr/index.php/api/brands', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
     },
 
-    getPageOfBrand: function({limit = 20, page = 1, sortOrder = 'desc'}) {
-        //return axios.get('http://thegoodnetwork.fr/index.php/api/brands')
+    getPageOfBrand: function({limit = 0, page = 1, id, name, status = 'APPROVED'}) {
         return axios.get('http://thegoodnetwork.fr/index.php/api/brands', {
             params: {
                 page: page,
                 limit: limit,
-                //order_created_at_: `${sortOrder}`,
+                id: id,
+                name: name,
+                status: status
             },
-
-            paramsSerializer: params => {
-                return qs.stringify(params, {arrayFormat: 'repeat'})
-            }
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              },
         })
     },
 
+    getBrand: function(id) {
+        return axios.get('http://thegoodnetwork.fr/index.php/api/brands/')
+    },
+
+    //Users
     getAvailableUsers: function() {
-        return axios.get('http://thegoodnetwork.fr/index.php/api/users')
+        return axios.get('http://thegoodnetwork.fr/index.php/api/users', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
     },
 
-    getPageOfUser: function({limit = 20, page = 1, sortOrder = 'desc'}) {
-        return axios.get('http://thegoodnetwork.fr/index.php/api/users')
-        // return axios.get('http://thegoodnetwork.fr/index.php/api/brands', {
-        //     params: {
-        //         page: page,
-        //         limit: limit,
-        //         order_created_at: `${sortOrder}`,
-        //     },
-
-        //     paramsSerializer: params => {
-        //         return qs.stringify(params, {arrayFormat: 'repeat'})
-        //     }
-        // })
+    getPageOfUser: function({limit = 0, page = 1, id, email}) {
+        return axios.get('http://thegoodnetwork.fr/index.php/api/users', {
+            params: {
+                page: page,
+                limit: limit,
+                id: id,
+                email: email
+            },
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
     },
 
+    //Post
     getAvailablePosts: function() {
-        return axios.get('http://thegoodnetwork.fr/index.php/api/posts')
+        return axios.get('http://thegoodnetwork.fr/index.php/api/posts', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
     },
 
-    getPageOfPost: function({limit = 0, page = 0, sortOrder = 'desc'}) {
-        //return axios.get('http://thegoodnetwork.fr/index.php/api/posts')
+    getPageOfPost: function({limit = 0, page = 1, id, title}) {
         return axios.get('http://thegoodnetwork.fr/index.php/api/posts', {
             params: {
                 page: page,
                 limit: limit,
-                //order_created_at: `${sortOrder}`,
+                id: id,
+                title: title
+            },
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
+    //NewBrands
+    getAvailableNewBrands: function() {
+        return axios.get('http://thegoodnetwork.fr/index.php/api/brands', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
+    getPageOfNewBrand: function({limit = 0, page = 1, id, name, status = 'PENDING'}) {
+        return axios.get('http://thegoodnetwork.fr/index.php/api/brands', {
+            params: {
+                page: page,
+                limit: limit,
+                id: id,
+                name: name,
+                status: status
             },
 
-            paramsSerializer: params => {
-                return qs.stringify(params, {arrayFormat: 'repeat'})
-            }
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              },
+
+
         })
-    }
+    },
 }
 
 export default StyleStockService;

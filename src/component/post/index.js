@@ -8,21 +8,20 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {Link} from 'react-router-dom';
 import Container from '@mui/material/Container';
 import DateUtils from '../../util/DateUtils';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import StyleStockService from '../../service/StyleStockService';
 
 const columns = [
     {field: 'id', headerName: 'ID', flex: 0.4},
     {field: 'title', headerName: 'Title', flex: 2},
     {field: 'author', headerName: 'Brand', flex: 1, renderCell: (params) => (
-        <Link to={`/Marques/${params.value}`}>{params.value}</Link>
+        <Link to={`/brands/${params.value.slice(22)}`}>{params.value.slice(22)}</Link>
       )},
     {field: 'created_at', valueGetter: (params) => DateUtils.formatDateNumber(params.row.created_at), headerName: 'Creation Date', flex: 1.4},
     {field: 'details', headerName: 'Details', sortable: false, flex: 0.5, renderCell: (cellValue) => {
         return <IconButton aria-label="details"
                            color="primary"
                            component={Link}
-                           to={`/Publications/${cellValue.id}`}>
+                           to={`/Posts/${cellValue.id}`}>
             <ArrowForwardIcon />
         </IconButton>;
     }},
@@ -34,7 +33,7 @@ const DEFAULT_STATE = {
     limit: 100,
     posts: [],
     availablePosts: [],
-    id: null,
+    id: '',
     title: '',
 };
 
@@ -69,9 +68,6 @@ class PostTable extends React.Component {
             StyleStockService.getPageOfPost(this.state).then(res => {
                 this.setState({
                     posts: res.data['hydra:member'],
-                    totalPages: res.data.totalPages,
-                    page: res.data.number,
-                    rowCount: res.data.totalElements,
                 });
             }).catch(() => {
                 
@@ -84,13 +80,13 @@ class PostTable extends React.Component {
     }
 
     resetFiltersAndUpdateData = () => {
-        this.setState({...DEFAULT_STATE, availableBrands: this.state.availableBrands}, this.updateData);
+        this.setState({...DEFAULT_STATE, availablePosts: this.state.availablePosts}, this.updateData);
     }
 
     render() {
         return (
             <Container maxWidth="xl" sx={{mt: 1}}>
-              <h1>Publications</h1>
+              <h1>Posts</h1>
                 <FormControl sx={{my: 1, mx: 0.5, width: 100}}>
                     <TextField 
                       id="outlined-search"
@@ -123,11 +119,11 @@ class PostTable extends React.Component {
                     initialState={{
                       pagination: {
                         paginationModel: {
-                          pageSize: 20,
+                          pageSize: 10,
                         },
                       },
                     }}
-                    pageSizeOptions={[20]}
+                    pageSizeOptions={[10]}
                     disableRowSelectionOnClick
                     loading={this.state.loading}
                 />
