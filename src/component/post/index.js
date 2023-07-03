@@ -45,9 +45,7 @@ class PostTable extends React.Component {
             this.setState({
                 availablePosts: res.data,
             });
-        }).catch(() => {
-            
-        });
+        }).catch(err => console.log(err))
 
         this.setState({
             id: this.props.id,
@@ -69,9 +67,8 @@ class PostTable extends React.Component {
                 this.setState({
                     posts: res.data['hydra:member'],
                 });
-            }).catch(() => {
-                
-            }).finally(() => {
+            }).catch(err => console.log(err))
+            .finally(() => {
                 this.setState({
                     loading: false,
                 });

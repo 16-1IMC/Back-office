@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { Link } from 'react-router-dom';
 import CheckroomIcon from '@mui/icons-material/Checkroom';
 
-const pages = ['Brands', 'Posts', 'Users', "NewBrands", "GetToken"];
+const pages = ['Brands', 'Posts', 'Users', "NewBrands", "Token"];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);

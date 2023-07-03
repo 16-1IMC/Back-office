@@ -44,9 +44,7 @@ class NewBrandTable extends React.Component {
             this.setState({
                 availableNewBrands: res.data,
             });
-        }).catch(() => {
-            
-        });
+        }).catch(err => console.log(err))
 
         this.setState({
             id: this.props.id,
@@ -68,9 +66,8 @@ class NewBrandTable extends React.Component {
                 this.setState({
                     newbrands: res.data['hydra:member'],
                 });
-            }).catch(() => {
-                
-            }).finally(() => {
+            }).catch(err => console.log(err))
+            .finally(() => {
                 this.setState({
                     loading: false,
                 });
