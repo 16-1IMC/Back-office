@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
@@ -27,8 +29,11 @@ const Login = () => {
     });
     if (email === "admin@stylestock.com") {
       localStorage.setItem('token', response['token']);
+      alert('Vous avez récupéré un token avec succès.');
+      navigate('/Home');
     } else {
       localStorage.removeItem('token');
+      alert('Erreur vérifier l\'email et le mot de passe utiliser.');
     }
   };
 
