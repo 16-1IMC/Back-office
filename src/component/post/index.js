@@ -14,7 +14,7 @@ const columns = [
     {field: 'id', headerName: 'ID', flex: 0.4},
     {field: 'title', headerName: 'Title', flex: 2},
     {field: 'author', headerName: 'Brand', flex: 1, renderCell: (params) => (
-        <Link to={`/brands/${params.value.slice(22)}`}>{params.value.slice(22)}</Link>
+        <Link to={`/brands/${params.id}`}>{params.id}</Link>
       )},
     {field: 'created_at', valueGetter: (params) => DateUtils.formatDateNumber(params.row.created_at), headerName: 'Creation Date', flex: 1.4},
     {field: 'details', headerName: 'Details', sortable: false, flex: 0.5, renderCell: (cellValue) => {
@@ -45,7 +45,9 @@ class PostTable extends React.Component {
             this.setState({
                 availablePosts: res.data,
             });
-        }).catch(err => console.log(err))
+        }).catch((error) => {
+            console.log(error);
+        });
 
         this.setState({
             id: this.props.id,
@@ -67,8 +69,9 @@ class PostTable extends React.Component {
                 this.setState({
                     posts: res.data['hydra:member'],
                 });
-            }).catch(err => console.log(err))
-            .finally(() => {
+            }).catch((error) => {
+                console.log(error);
+            }).finally(() => {
                 this.setState({
                     loading: false,
                 });

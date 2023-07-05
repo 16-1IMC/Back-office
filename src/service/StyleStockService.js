@@ -27,7 +27,19 @@ const StyleStockService = {
     },
 
     getBrand: function(id) {
-        return axios.get('http://thegoodnetwork.fr/index.php/api/brands/')
+        return axios.get(`http://thegoodnetwork.fr/index.php/api/brands/${id}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
+    newBrandStatus: function(id, status) {
+        return axios.put(`http://thegoodnetwork.fr/index.php/api/brands/${id}`, {status}, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
     },
 
     //Users
@@ -53,6 +65,22 @@ const StyleStockService = {
         })
     },
 
+    getUser: function(id) {
+        return axios.get(`http://thegoodnetwork.fr/index.php/api/users/${id}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
+    deleteUser: function(id) {
+        return axios.delete(`http://thegoodnetwork.fr/index.php/api/users/${id}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
     //Post
     getAvailablePosts: function() {
         return axios.get('http://thegoodnetwork.fr/index.php/api/posts', {
@@ -70,6 +98,22 @@ const StyleStockService = {
                 id: id,
                 title: title
             },
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
+    getPost: function(id) {
+        return axios.get(`http://thegoodnetwork.fr/index.php/api/posts/${id}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
+    deletePost: function(id) {
+        return axios.delete(`http://thegoodnetwork.fr/index.php/api/posts/${id}`, {
             headers: {
                 'Authorization': 'Bearer ' + localStorage.token
               }
@@ -102,6 +146,23 @@ const StyleStockService = {
 
         })
     },
+
+    getNewBrand: function(id) {
+        return axios.get(`http://thegoodnetwork.fr/index.php/api/brands/${id}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
+    acceptNewBrandStatus: function(id) {
+        return axios.put(`http://thegoodnetwork.fr/index.php/api/brands/${id}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+              }
+        })
+    },
+
 }
 
 export default StyleStockService;

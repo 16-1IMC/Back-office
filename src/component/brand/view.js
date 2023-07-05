@@ -1,57 +1,98 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router';
 import StyleStockService from '../../service/StyleStockService';
 import CardContent from '@mui/material/CardContent';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
+import FormControl from '@mui/material/FormControl';
+import Button from '@mui/material/Button';
 import DateUtils from '../../util/DateUtils';
-import {withSnackbar} from 'notistack';
 
-class BrandDetails extends React.Component {
-    state = {
-        loading: true,
+const BrandDetails = () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [brand, setBrand] = useState(null);
+
+    useEffect(() => {
+        StyleStockService.getBrand(id)
+            .then((res) => {
+                setBrand(res.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, [id]);
+
+    const handleArchive = () => {
+        StyleStockService.newBrandStatus(id, 'ARCHIVE')
+            .then(() => {
+                setBrand({ ...brand, status: 'ARCHIVE' });
+                alert('La marque est passé au statut "ARCHIVE" avec succès.');
+                navigate('/Brands');
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
-    componentDidMount() {
-        StyleStockService.getBrand(this.props.id).then((res) => {
-            this.setState({brand: res.data});
-        }).then(() => {
-            this.setState({loading: false});
-        }).catch(() => {
-        
-        });
-    }
+    return (
+        <Container maxWidth="xl" sx={{ my: 2 }}>
+            {loading ? (
+                <Stack spacing={1}>
+                    <Skeleton variant="text" width={100} />
+                    <Skeleton variant="text" width={300} />
+                    <Skeleton variant="text" width={200} />
+                    <Skeleton variant="rectangular" height={118} />
+                </Stack>
+            ) : (
+                <Card sx={{ boxShadow: 4 }}>
+                    <CardContent>
+                    <FormControl sx={{my: 1, mx: 0.5}}>
+                        <Button color="warning" variant="outlined" style={{minHeight: '56px'}} onClick={handleArchive} size="large">Archive</Button>
+                    </FormControl>
+                        <p>
+                            <b>Id :</b> {brand.id}
+                        </p>
+                        <p>
+                            <b>Name :</b> {brand.name}
+                        </p>
+                        <p>
+                            <b>Email:</b> {brand.email}
+                        </p>
+                        <p>
+                            <b>Creation Date:</b> {DateUtils.formatDateNumber(brand.created_at)}
+                        </p>
+                        <p>
+                            <b>Status :</b> {brand.status}
+                        </p>
+                        <p>
+                            <b>Categories :</b>
+                            {brand.categories.map((params) => {       
+                                return (
+                                <p key={params} value={params}>Name : {params.name}</p>
+                                ) 
+                            })}
+                        </p>
+                        <p>
+                            <b>Social Networks :</b>
+                            {brand.socialNetworks.map((params) => {       
+                                return (
+                                <p key={params} value={params}>Name : {params.name} <br/> Link : {params.link}</p>
+                                ) 
+                            })}
+                        </p>
+                        <p>
+                            <b>Posts Numbers:</b> {brand.posts ? brand.posts.length : 0}
+                        </p>
+                    </CardContent>
+                </Card>
+            )}
+        </Container>
+    );
+};
 
-    render() {
-        return (
-            <Container maxWidth="xl" sx={{my: 2}}>
-                {this.state.loading
-                    ? (
-                        <Stack spacing={1}>
-                            <Skeleton variant="text" width={100}/>
-                            <Skeleton variant="text" width={300}/>
-                            <Skeleton variant="text" width={200}/>
-                            <Skeleton variant="rectangular" height={118}/>
-                        </Stack>
-                    ) : (
-                        <Card sx={{boxShadow: 4}}>
-                            <CardContent>
-
-                                <p><b>Id :</b> {this.state.brand.id}</p>
-                                <p><b>Name :</b> {this.state.brand.name}</p>
-                                <p><b>Email:</b> {this.state.brand.email}</p>
-                                <p><b>Creation Date:</b> {DateUtils(this.state.brand.created_at)}</p>
-                                <p><b>Categories:</b> {this.state.brand.categories}</p>
-                                <p><b>Posts Numbers:</b> {this.state.brand.post.length}</p>
-                             
-                            </CardContent>
-                        </Card>
-                    )
-                }
-            </Container>
-        );
-    }
-}
-
-export default withSnackbar(BrandDetails);
+export default BrandDetails;

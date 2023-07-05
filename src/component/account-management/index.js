@@ -43,7 +43,9 @@ class UserTable extends React.Component {
             this.setState({
                 availableUsers: res.data,
             });
-        }).catch(err => console.log(err))
+        }).catch((error) => {
+            console.log(error);
+        });
 
         this.setState({
             id: this.props.id,
@@ -65,8 +67,9 @@ class UserTable extends React.Component {
                 this.setState({
                     users: res.data['hydra:member'],
                 });
-            }).catch(err => console.log(err))
-            .finally(() => {
+            }).catch((error) => {
+                console.log(error);
+            }).finally(() => {
                 this.setState({
                     loading: false,
                 });

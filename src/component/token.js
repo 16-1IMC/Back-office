@@ -25,7 +25,11 @@ const Login = () => {
       email: email,
       password: password
     });
-    localStorage.setItem('token', response['token']);
+    if (email === "admin@stylestock.com") {
+      localStorage.setItem('token', response['token']);
+    } else {
+      localStorage.removeItem('token');
+    }
   };
 
   return (
