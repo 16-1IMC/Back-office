@@ -69,7 +69,7 @@ const PostDetails = () => {
                             <b>Content :</b> {post.content}
                         </p>
                         <p>
-                            <b>Likes Numbers :</b> {post.likes}
+                            <b>Likes Numbers :</b> {post.likes ? post.likes.length : 0}
                         </p>
                     </CardContent>
                 </Card>
